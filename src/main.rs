@@ -1,5 +1,7 @@
-mod test;
+mod print_demo;
+use print_demo as printdemo;
+
 fn main() {
-    println!("Hello, world!1");
-    test::another_function();
+    // rust 输出到命令行
+    printdemo::print::print_demo();
 }
