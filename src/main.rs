@@ -3,11 +3,13 @@ mod basic_grammar;
 mod data_type;
 mod iterator;
 mod closure;
+mod r#struct;
 
 use print_demo as printdemo;
 use data_type::data_type as datatype;
 use iterator::iterator_demo;
 use closure::closure_demo;
+use r#struct::struct_demo;
 
 fn main() {
     // rust 输出到命令行
@@ -21,7 +23,10 @@ fn main() {
 
     // 迭代器
     iterator_demo::iterator_demo();
-    
+
     // 闭包
     closure_demo::closure_demo();
+
+    // 结构体
+    struct_demo::struct_demo();
 }
