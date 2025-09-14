@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Rust 官方推荐使用 clap 或 structopt（structopt 已被合并到 clap 3.x）来解析复杂参数
+clap = { version = "4.4", features = ["derive"] }

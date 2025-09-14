@@ -5,12 +5,14 @@ use std::io::Read;
 pub fn error_demo() {}
 
 /// 对于可恢复错误用 Result<T, E> 类来处理，对于不可恢复错误使用 panic! 宏来处理。
+#[allow(dead_code)]
 fn panic_demo() {
     panic!("error occured");
     // println!("Hello, Rust");
 }
 
 #[allow(unused_variables)]
+#[allow(dead_code)]
 fn result_demo() {
     let f = File::open("hello.txt");
     match f {
@@ -34,7 +36,8 @@ fn result_demo() {
 /// 可恢复的错误的传递
 ///
 #[allow(unused_variables)]
-fn error_throw(){
+#[allow(dead_code)]
+fn error_throw() {
     let r = f(10000);
     if let Ok(v) = r {
         println!("Ok: f(-1) = {}", v);
@@ -50,10 +53,8 @@ fn error_throw(){
     }
 }
 
-
 fn f(i: i32) -> Result<i32, bool> {
-    if i >= 0 { Ok(i) }
-    else { Err(false) }
+    if i >= 0 { Ok(i) } else { Err(false) }
 }
 
 /// ? 是 Rust 的错误传播（error propagation）运算符。
@@ -74,24 +75,22 @@ fn g(i: i32) -> Result<i32, bool> {
     Ok(t) // 因为确定 t 不是 Err, t 在这里已经是 i32 类型
 }
 
-
 /// 只有 std::io::Error 才有 .kind() 方法。
 ///
 /// 对于其他错误类型（比如你自定义的错误，或者很多库里的错误），一般是通过 match 或者 thiserror / anyhow / eyre 这种库来区分和处理，不会有 kind()。
-fn kind_demo(){
+#[allow(dead_code)]
+fn kind_demo() {
     let str_file = read_text_from_file("hello.txt");
     match str_file {
         Ok(s) => println!("{}", s),
-        Err(e) => {
-            match e.kind() {
-                io::ErrorKind::NotFound => {
-                    println!("No such file");
-                },
-                _ => {
-                    println!("Cannot read the file");
-                }
+        Err(e) => match e.kind() {
+            io::ErrorKind::NotFound => {
+                println!("No such file");
             }
-        }
+            _ => {
+                println!("Cannot read the file");
+            }
+        },
     }
 }
 

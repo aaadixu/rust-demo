@@ -14,8 +14,56 @@ use closure::closure_demo;
 use r#struct::struct_demo;
 use r#enum::enum_demo;
 use error::error_demo;
+use clap::{Parser,ValueEnum};
+
+/// 命令行参数示例
+#[derive(Parser, Debug)]
+#[command(author, version, about)] // clap 只支持 author、version、about、long_about 等字段
+struct Args {
+    /// 用户名 (必填)
+    #[arg(short, long, help = "用户名")]
+    username: String,
+
+    /// 端口号 (可选，默认值 8080)
+    #[arg(short, long, default_value_t = 8080, help = "端口号")]
+    port: u16,
+
+    /// 调试模式 (布尔 flag)
+    #[arg(short, long, default_value_t = false, help = "开启调试模式")]
+    debug: bool,
+
+    /// 支持多值参数 (可以指定多个文件)
+    #[arg(short, long, num_args = 1.., help = "文件列表")]
+    files: Vec<String>,
+
+    /// 枚举类型参数
+    #[arg(long, value_enum, ignore_case = true, default_value_t = Mode::Fast, help = "运行模式")]
+    mode: Mode,
+}
+
+/// 枚举类型参数
+#[derive(ValueEnum, Clone, Debug)]
+enum Mode {
+    Fast,
+    Slow,
+}
 
 fn main() {
+    // Rust 中主函数是个无参函数，环境参数需要开发者通过 std::env 模块取出
+    let args = std::env::args();
+    // cargo run -- a b
+    // 输出：Args { inner: ["target/debug/rust-demo", "a", "b"] }
+    println!("{:?}", args);
+
+    // # 运行示例
+    // cargo run -- -u Alice -f file1.txt file2.txt --mode Slow -d
+    let args = Args::parse();
+    println!("username = {}", args.username);
+    println!("port = {}", args.port);
+    println!("debug = {}", args.debug);
+    println!("files = {:?}", args.files);
+    println!("mode = {:?}", args.mode);
+
     // rust 输出到命令行
     printdemo::print::print_demo();
 
