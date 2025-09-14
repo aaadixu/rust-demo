@@ -5,6 +5,7 @@ mod iterator;
 mod closure;
 mod r#struct;
 mod r#enum;
+mod error;
 
 use print_demo as printdemo;
 use data_type::data_type as datatype;
@@ -12,6 +13,7 @@ use iterator::iterator_demo;
 use closure::closure_demo;
 use r#struct::struct_demo;
 use r#enum::enum_demo;
+use error::error_demo;
 
 fn main() {
     // rust 输出到命令行
@@ -34,4 +36,7 @@ fn main() {
     
     // 枚举
     enum_demo::enum_demo();
+    
+    // 异常处理
+    error_demo::error_demo();
 }
