@@ -8,6 +8,7 @@ mod r#enum;
 mod error;
 mod file;
 mod set_data_type;
+mod concurrent;
 
 use print_demo as printdemo;
 use data_type::data_type as datatype;
@@ -19,6 +20,7 @@ use error::error_demo;
 use clap::{Parser,ValueEnum};
 use file::file_demo;
 use set_data_type::set_data_type as setdata;
+use concurrent::thread;
 /// 命令行参数示例
 #[derive(Parser, Debug)]
 #[command(author, version, about)] // clap 只支持 author、version、about、long_about 等字段
@@ -93,7 +95,10 @@ fn main() {
 
     // 文件读写
     file_demo::file_demo();
-    
+
     // 集合类型数据
     setdata::set_data_type_demo();
+
+    // 并发
+    thread::thread_demo();
 }
