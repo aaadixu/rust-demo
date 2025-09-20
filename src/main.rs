@@ -9,6 +9,7 @@ mod error;
 mod file;
 mod set_data_type;
 mod concurrent;
+mod macros;
 
 use print_demo as printdemo;
 use data_type::data_type as datatype;
@@ -21,6 +22,8 @@ use clap::{Parser,ValueEnum};
 use file::file_demo;
 use set_data_type::set_data_type as setdata;
 use concurrent::thread;
+use crate::macros::macros_demo;
+
 /// 命令行参数示例
 #[derive(Parser, Debug)]
 #[command(author, version, about)] // clap 只支持 author、version、about、long_about 等字段
@@ -101,4 +104,7 @@ fn main() {
 
     // 并发
     thread::thread_demo();
+
+    // 宏
+    macros_demo::macros_demo();
 }
