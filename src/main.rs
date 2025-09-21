@@ -10,6 +10,7 @@ mod file;
 mod set_data_type;
 mod concurrent;
 mod macros;
+mod smart_pointers;
 
 use print_demo as printdemo;
 use data_type::data_type as datatype;
@@ -23,6 +24,7 @@ use file::file_demo;
 use set_data_type::set_data_type as setdata;
 use concurrent::thread;
 use crate::macros::macros_demo;
+use smart_pointers::smart_pointers_demo;
 
 /// 命令行参数示例
 #[derive(Parser, Debug)]
@@ -107,4 +109,7 @@ fn main() {
 
     // 宏
     macros_demo::macros_demo();
+
+    // 智能指针
+    smart_pointers_demo::smart_pointers_demo();
 }
