@@ -934,6 +934,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "log_filter"
+version = "0.1.0"
+dependencies = [
+ "clap",
+]
+
+[[package]]
 name = "lru-slab"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
