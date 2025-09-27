@@ -2,6 +2,7 @@ use clap::Parser;
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+use regex::Regex;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
@@ -13,7 +14,7 @@ struct Args {
         short,
         long,
         num_args = 1..,
-        help = "关键词（支持多个"
+        help = "关键词（支持多个）"
     )]
     keyword: Vec<String>,
     #[arg(
@@ -42,12 +43,14 @@ fn main() {
     let lines = read_file(&args.file).expect("读取文件失败");
 
     // if 分支可以返回值，但是值的类型必须一致
-    let res = if !args.ignore_case {
-        filter_log_without_case(&lines, &args.keyword)
-    }else {
-        filter_log_with_case(&lines, &args.keyword)
-    };
+    // let res = if !args.ignore_case {
+    //     filter_log_without_case(&lines, &args.keyword)
+    // }else {
+    //     filter_log_with_case(&lines, &args.keyword)
+    // };
 
+    //  cargo run -p log_filter -- -f /Users/zhixu/code/rust/rust-demo/log_filter/test.log -k '^1.*' -i -l
+    let res = filter_log_with_regex(&lines, &args.keyword);
     for (num,line) in res {
         if args.line_number {
             println!("【{}】{line}",num + 1)
@@ -57,6 +60,24 @@ fn main() {
     }
 }
 
+/// 使用正则表达式
+fn filter_log_with_regex<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
+    let res = lines
+        .iter()
+        .enumerate()
+        .filter(|(_,line)| -> bool {
+            keywords
+                .iter()
+                .any(|keyword| -> bool {
+                    let re = Regex::new(keyword).expect("正则编译失败");
+                    re.is_match(line)
+                })
+        })
+        .collect();
+    res
+}
+
+#[allow(unused)]
 fn filter_log_without_case<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
      let res = lines
         .iter()
@@ -70,6 +91,7 @@ fn filter_log_without_case<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -
      res
 }
 
+#[allow(unused)]
 fn filter_log_with_case<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
     lines
         .iter()
