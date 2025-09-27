@@ -1,8 +1,8 @@
 use clap::Parser;
-use std::fs::File;
-use std::io;
-use std::io::BufRead;
 use regex::Regex;
+use std::fs::File;
+use std::io::BufRead;
+use std::io::{self, Write};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
@@ -33,6 +33,9 @@ struct Args {
         help = "输出时显示行号"
     )]
     line_number: bool,
+
+    #[arg(required = false, short, long, help = "输出到文件")]
+    output: String,
 }
 
 /// cargo run -p log_filter -- -f /Users/zhixu/code/rust/rust-demo/log_filter/test.log -k test -i -l
@@ -51,52 +54,63 @@ fn main() {
 
     //  cargo run -p log_filter -- -f /Users/zhixu/code/rust/rust-demo/log_filter/test.log -k '^1.*' -i -l
     let res = filter_log_with_regex(&lines, &args.keyword);
-    for (num,line) in res {
+    for (num, line) in &res {
         if args.line_number {
-            println!("【{}】{line}",num + 1)
-        }else {
+            println!("【{}】{line}", num + 1)
+        } else {
             println!("{line}")
         }
+    }
+    // cargo run -p log_filter -- -f /Users/zhixu/code/rust/rust-demo/log_filter/test.log -k '^1.*' -i -l -o /Users/zhixu/code/rust/rust-demo/log_filter/output.log
+    if !args.output.trim().is_empty() {
+        write_file(&args.output,&res);
     }
 }
 
 /// 使用正则表达式
-fn filter_log_with_regex<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
+fn filter_log_with_regex<'a>(
+    lines: &'a Vec<String>,
+    keywords: &Vec<String>,
+) -> Vec<(usize, &'a String)> {
     let res = lines
         .iter()
         .enumerate()
-        .filter(|(_,line)| -> bool {
-            keywords
-                .iter()
-                .any(|keyword| -> bool {
-                    let re = Regex::new(keyword).expect("正则编译失败");
-                    re.is_match(line)
-                })
+        .filter(|(_, line)| -> bool {
+            keywords.iter().any(|keyword| -> bool {
+                let re = Regex::new(keyword).expect("正则编译失败");
+                re.is_match(line)
+            })
         })
         .collect();
     res
 }
 
 #[allow(unused)]
-fn filter_log_without_case<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
-     let res = lines
+fn filter_log_without_case<'a>(
+    lines: &'a Vec<String>,
+    keywords: &Vec<String>,
+) -> Vec<(usize, &'a String)> {
+    let res = lines
         .iter()
-         .enumerate()
-        .filter(|(_,line)| -> bool {
+        .enumerate()
+        .filter(|(_, line)| -> bool {
             keywords
                 .iter()
                 .any(|keyword| -> bool { line.contains(keyword) })
         })
         .collect();
-     res
+    res
 }
 
 #[allow(unused)]
-fn filter_log_with_case<'a>(lines: &'a Vec<String>, keywords: &Vec<String>) -> Vec<(usize,&'a String)> {
+fn filter_log_with_case<'a>(
+    lines: &'a Vec<String>,
+    keywords: &Vec<String>,
+) -> Vec<(usize, &'a String)> {
     lines
         .iter()
         .enumerate()
-        .filter(|(_,line)| -> bool {
+        .filter(|(_, line)| -> bool {
             keywords
                 .iter()
                 .any(|keyword| -> bool { line.to_lowercase().contains(&keyword.to_lowercase()) })
@@ -109,4 +123,12 @@ fn read_file(file_path: &str) -> io::Result<Vec<String>> {
     let reader = io::BufReader::new(file);
     let lines = reader.lines().filter_map(Result::ok).collect();
     Ok(lines)
+}
+
+fn write_file(ouput :&str,lines : &Vec<(usize, &String)>) {
+    let mut file = File::create(ouput).expect("创建输出文件失败");
+    // 遍历 Vec<String>，逐行写入
+    for (_,line) in lines {
+        writeln!(file, "{}", line).expect("写入失败"); // writeln! 会在行尾自动加换行符
+    }
 }
